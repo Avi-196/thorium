@@ -1,22 +1,35 @@
-
+  const jwt=require("jsonwebtoken")
 const tokenCheck= async function(req,res,next){
-    const token=req.header["x-Auth-token"];
+    let token=req.header["x-Auth-token"];
 
     if(!token){
         return res.send("a token is required")
     }
-    try{
-        const decode=jwt.verify(token,config.Token_Key)
-        req.user=decode
+    
+        let decode=jwt.verify(token,"functionup-thorium")
+        if(!decode){
+            return res.send("a token is invalid");
 
-    }catch(err){
-        return res.send("invalid token")
 
-    }
+
+
+        }
+
+    
+
+    
      return next()
 
 }
 module.exports.tokenCheck=tokenCheck
+
+
+
+
+
+
+
+
 
 
 

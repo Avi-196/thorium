@@ -98,10 +98,27 @@ const DeletUser=async function(req,res){
    if(!user){
      return res.send({msg:"user does not exist"})
    }
-   let userData=req.body
-   let DeletUser=await userModel.findOneAndUpdate({_id:userId},userData,{isDeleted:false},{new:true})
+   //let userData=req.body
+   let DeletUser=await userModel.findOneAndUpdate({_id:userId},{isDeleted:true},{new:true})
    res.send({status:DeletUser})
    
+}
+const Postmsg=async function (req,res){
+  let msg=req.body.msg
+  let token=req.headers['x-auth-token']
+  let decodedToken=jwt.verify(token,"functionup-thorium");
+  let userTobeModified=req.params.userId
+  let userLoggedIn=decodedToken.userId
+  if(userTobeModified != userLoggedIn)
+     return res.send({status:false, msg:"no authorisation"})
+     let user=await userModel.findById(req.params.userId)
+     if(!user) return res.send({status:false,msg:"no such user exist"})
+     let updatedPost=user.posts
+     updatedPost.push(msg)
+     let updatedUser=await userModel.findOneAndUpdate({_id:user._id},{posts: updatedPost}, {new: true})
+     return res.send ({status:true, data:updatedUser})
+
+
 }
 
 
@@ -110,3 +127,4 @@ module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.loginUser = loginUser;
 module.exports.DeletUser=DeletUser;
+module.exports.Postmsg=Postmsg
